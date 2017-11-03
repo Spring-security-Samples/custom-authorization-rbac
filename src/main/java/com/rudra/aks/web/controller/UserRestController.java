@@ -38,7 +38,7 @@ public class UserRestController {
 	MessageSource		messageSource;
 	
 	@PreAuthorize("@customAuthorizationUtil.isAuthorize(authentication, 'VIEW')")
-	@RequestMapping(path = "/", method = RequestMethod.GET)
+	@RequestMapping(path = "/", method = RequestMethod.GET, produces = "applcation/json")
 	public ResponseEntity<?>	getAllUsers() {
 		List<UserDTO> usersList = modelConverter.convertTo(userService.usersList());
 		if(usersList == null )
@@ -63,10 +63,10 @@ public class UserRestController {
 	} 
 	
 	@PreAuthorize("@customAuthorizationUtil.isAuthorize(authentication, 'VIEW')")
-	@RequestMapping( value = "/getUser/{id}", method = RequestMethod.GET)
-	public ResponseEntity<?>	getUserById( @PathVariable("id") int id) {
+	@RequestMapping( value = "/getUser/{id}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<UserDTO>	getUserById( @PathVariable("id") int id) {
 		UserDTO user = modelConverter.converUserToDto(userService.findUserById(id));
-		return new ResponseEntity<UserDTO>(user, HttpStatus.OK);
+		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
 	@PreAuthorize("@customAuthorizationUtil.isAuthorize(authentication, 'UPDATE')")
@@ -87,7 +87,7 @@ public class UserRestController {
 	@RequestMapping( value = "/deleteUser/{name}", method = RequestMethod.DELETE)
 	public	 ResponseEntity<?>	deleteUserByUserName(@PathVariable ("name") String username) {
 		try {
-			if ( !userService.deleteUser(username));
+			if ( !userService.deleteUser(username))
 				return new ResponseEntity<>("User not deleted with username : " + username, HttpStatus.BAD_REQUEST);
 		} catch( Exception ex) {
 			if ( ex instanceof CustomException)
